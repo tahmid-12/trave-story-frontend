@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import ProtectedRoute from "./components/protectdRoutes/ProtectedRoute";
 import Login from "./pages/Auth/LogIn";
 import SignIn from "./pages/Auth/SignIn";
 import Home from "./pages/Home/Home";
@@ -13,9 +14,14 @@ function App() {
       </h1> */}
       <Router>
         <Routes>
-          <Route path="/dashboard" element={<Home />}/>
           <Route path="/signin" element={<SignIn />}/>
           <Route path="/login" element={<Login />}/>
+          <Route path="/dashboard" element={
+            // <Home />
+            <ProtectedRoute>
+              <Home />
+            </ProtectedRoute>
+            }/>
         </Routes>
       </Router>
     </>

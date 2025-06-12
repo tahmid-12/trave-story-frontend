@@ -1,7 +1,11 @@
+import { useEffect } from "react";
+import type { RootState } from "../../store/store";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import PasswordInput from "../input/PasswordInput"
-import { validateEmail } from "../../utils/helper"
+import { login } from "../../features/auth/auththunks";
+import PasswordInput from "../input/PasswordInput";
+import { validateEmail } from "../../utils/helper";
 
 type AuthFormProps = {
     mode: "login" | "signup";
@@ -15,8 +19,8 @@ type FormData = {
 };
 
 const AuthForm = ({ mode }: AuthFormProps) => {
-
     const navigate = useNavigate();
+    const dispatch = useAppDispatch();
 
     const {
         register,
@@ -26,13 +30,28 @@ const AuthForm = ({ mode }: AuthFormProps) => {
     } = useForm<FormData>();
 
     const passwordValue = watch("password");
-
     const isLogin = mode === "login";
 
+
+    const { loading, error, isAuthenticated } = useAppSelector((state: RootState) => state.auth);
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate("/dashboard");
+        }
+    }, [isAuthenticated, navigate]);
+
     const onSubmit = (data: FormData) => {
-        console.log(`${mode.toUpperCase()} Data:`, data);
-        // Add actual login/signup logic here
-        // navigate("/dashboard");
+        if (isLogin) {
+            dispatch(login({ email: data.email, password: data.password }))
+                .unwrap()
+                .catch((err: unknown) => {
+                    console.error("Login failed:", err);
+                });
+        } else {
+            // Handle signup logic here
+            console.log("Signup data", data);
+        }
     };
 
     return (
@@ -56,7 +75,9 @@ const AuthForm = ({ mode }: AuthFormProps) => {
                             )}
                         </p>
                         <p className="text-sm md:text-[15px] text-white leading-6 pr-3 mt-3">
-                            {isLogin ? "Record your travel experiences and memories in your personal travel journey" : "Create an account to start your travel journey and share your adventures with the world."}
+                            {isLogin
+                                ? "Record your travel experiences and memories in your personal travel journey"
+                                : "Create an account to start your travel journey and share your adventures with the world."}
                         </p>
                     </div>
                 </div>
@@ -103,8 +124,10 @@ const AuthForm = ({ mode }: AuthFormProps) => {
                             </>
                         )}
 
-                        <button type="submit" className="btn-primary w-full mt-4">
-                            {isLogin ? "LOGIN" : "SIGN UP"}
+                        {error && <p className="text-red-500 text-sm mt-2 text-center">{error}</p>}
+
+                        <button type="submit" className="btn-primary w-full mt-4" disabled={loading}>
+                            {loading ? "Loading..." : isLogin ? "LOGIN" : "SIGN UP"}
                         </button>
 
                         <p className="text-xs text-slate-500 text-center my-4">Or</p>
@@ -112,7 +135,7 @@ const AuthForm = ({ mode }: AuthFormProps) => {
                         <button
                             type="button"
                             className="btn-primary btn-light w-full"
-                            onClick={() => navigate(isLogin ? "/signin" : "/login")}
+                            onClick={() => navigate(isLogin ? "/signup" : "/login")}
                         >
                             {isLogin ? "CREATE ACCOUNT" : "BACK TO LOGIN"}
                         </button>
@@ -120,7 +143,7 @@ const AuthForm = ({ mode }: AuthFormProps) => {
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default AuthForm
+export default AuthForm;

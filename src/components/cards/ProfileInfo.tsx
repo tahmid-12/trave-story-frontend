@@ -1,12 +1,16 @@
 // import { getInitials } from "../../utils/helper";
 import { useNavigate } from "react-router-dom";
+import { useAppDispatch } from "../../store/hooks";
+import { logout } from "../../features/auth/auththunks";
 
 const ProfileInfo = () => {
 
     const navigate = useNavigate();
+    const dispatch = useAppDispatch();
 
     const onLogOut = () => {
-        localStorage.clear();
+        // localStorage.clear();
+        dispatch(logout());
         navigate("/login");
     };
 
