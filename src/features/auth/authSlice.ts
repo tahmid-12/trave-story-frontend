@@ -1,0 +1,66 @@
+import { createSlice } from '@reduxjs/toolkit';
+import type { PayloadAction } from '@reduxjs/toolkit';
+import type { AuthState, AuthResponse, User } from './authTypes';
+import { login, getUser, logout } from './auththunks';
+
+const initialState: AuthState = {
+  user: null,
+  loading: false,
+  error: null,
+  isAuthenticated: false,
+};
+
+const authSlice = createSlice({
+  name: 'auth',
+  initialState,
+  reducers: {
+    resetAuthState(state) {
+      state.user = null;
+      state.loading = false;
+      state.error = null;
+      state.isAuthenticated = false;
+    },
+  },
+  extraReducers: (builder) => {
+    // LOGIN
+    builder.addCase(login.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    })
+    .addCase(login.fulfilled, (state, action: PayloadAction<AuthResponse>) => {
+      state.loading = false;
+      state.user = action.payload.user;
+      state.isAuthenticated = true;
+    })
+    .addCase(login.rejected, (state, action) => {
+      state.loading = false;
+      state.error = typeof action.payload === 'string' ? action.payload : 'Login failed';
+      state.isAuthenticated = false;
+    });
+
+    // GET USER
+    builder.addCase(getUser.fulfilled, (state, action: PayloadAction<{ user: User }>) => {
+      state.user = action.payload.user;
+      state.isAuthenticated = true;
+    })
+    .addCase(getUser.rejected, (state, action) => {
+      state.user = null;
+      state.isAuthenticated = false;
+      state.error = action.payload || 'User fetch failed';
+    });
+
+    // LOGOUT
+    builder.addCase(logout.fulfilled, (state) => {
+        state.user = null;
+        state.isAuthenticated = false;
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(logout.rejected, (state, action) => {
+        state.error = typeof action.payload === 'string' ? action.payload : 'Logout failed';
+      });
+  },
+});
+
+export const { resetAuthState } = authSlice.actions;
+export default authSlice.reducer;

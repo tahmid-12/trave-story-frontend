@@ -8,3 +8,10 @@ export interface AuthResponse {
   accesstoken: string;
   message: string;
 }
+
+export interface AuthState{
+    user: User | null;
+    loading: boolean;
+    error: string | null;
+    isAuthenticated: boolean;
+}
