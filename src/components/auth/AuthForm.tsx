@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { login, signUp } from "../../features/auth/auththunks";
 import PasswordInput from "../input/PasswordInput";
 import { validateEmail } from "../../utils/helper";
+import { getUser } from "../../features/auth/auththunks";
 
 type AuthFormProps = {
     mode: "login" | "signup";
@@ -45,6 +46,9 @@ const AuthForm = ({ mode }: AuthFormProps) => {
         if (isLogin) {
             dispatch(login({ email: data.email, password: data.password }))
                 .unwrap()
+                .then(() => {
+                    dispatch(getUser());
+                })
                 .catch((err: unknown) => {
                     console.error("Login failed:", err);
                 });
