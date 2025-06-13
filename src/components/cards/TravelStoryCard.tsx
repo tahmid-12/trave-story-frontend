@@ -1,14 +1,29 @@
-import LOGO from "../../assets/images/LOGO.jpg";
 import { GrMapLocation } from "react-icons/gr";
 import { FaHeart } from "react-icons/fa";
 
-const TravelStoryCard = () => {
+interface TravelStory {
+  _id: string;
+  title: string;
+  story: string;
+  visitedLocation: string[];
+  isFavourite: boolean;
+  userId: string;
+  imageUrl: string;
+  visitedDate: string;
+  createdOn: string;
+}
+
+interface TravelStoryCardProps {
+  story: TravelStory;
+}
+
+const TravelStoryCard = ({ story }: TravelStoryCardProps) => {
   const onClick = () => {}
   return (
     <div className="border rounded-lg overflow-hidden bg-white hover:shadow-lg hover:shadow-slate-200 transition-all ease-in-out relative cursor-pointer">
       <img
-        src={LOGO}
-        alt="LOGO"
+        src={story.imageUrl}
+        alt={story.title}
         className="w-full h-56 object-cover rounded-lg" 
         onClick={onClick}
       />
@@ -22,7 +37,7 @@ const TravelStoryCard = () => {
       <div className="p-4" onClick={onClick}>
         <div className="flex items-center gap-3">
           <div className="flex-1">
-            <h6 className="text-sm font-medium">Title</h6>
+            <h6 className="text-sm font-medium">{story.title}</h6>
             <span className="text-xs text-slate-500">
               {/* { date ? moment(date).format("DD MM YYYY") : "-"} */}
               Date

@@ -1,7 +1,12 @@
 import Navbar from "../../components/common/Navbar";
 import TravelStoryCard from "../../components/cards/TravelStoryCard";
+import { useGetAllStoriesQuery } from "../../features/travel/travelApi";
 
 const Home = () => {
+  const { data, isLoading, error } = useGetAllStoriesQuery();
+
+  // console.log("DATA", data);
+
   return (
     <>
       <Navbar />
@@ -10,8 +15,11 @@ const Home = () => {
           <div className="flex-1">
 
             <div className="grid grid-cols-2 gap-4">
-              <TravelStoryCard />
-              <TravelStoryCard />
+              {isLoading && <p>Loading...</p>}
+              {error && <p className="text-red-500">Failed to load stories.</p>}
+              {data?.travelStories?.map((story) => (
+                <TravelStoryCard key={story._id} story={story} />
+              ))}
             </div>
 
           </div>
