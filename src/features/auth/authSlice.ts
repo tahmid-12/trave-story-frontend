@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { AuthState, AuthResponse, User } from './authTypes';
-import { login, getUser, logout } from './auththunks';
+import { signUp, login, getUser, logout } from './auththunks';
 
 const initialState: AuthState = {
   user: null,
@@ -22,6 +22,21 @@ const authSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
+    //Sugn UP
+    builder.addCase(signUp.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    })
+    .addCase(signUp.fulfilled, (state, action: PayloadAction<AuthResponse>) => {
+      state.loading = false;
+      state.user = action.payload.user;
+      state.isAuthenticated = true; 
+    })
+    .addCase(signUp.rejected, (state, action) => {
+      state.loading = false;
+      state.error = typeof action.payload === 'string' ? action.payload : 'Sign up failed';
+      state.isAuthenticated = false;
+    });
     // LOGIN
     builder.addCase(login.pending, (state) => {
       state.loading = true;

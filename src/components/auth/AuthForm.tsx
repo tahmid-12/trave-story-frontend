@@ -3,7 +3,7 @@ import type { RootState } from "../../store/store";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { login } from "../../features/auth/auththunks";
+import { login, signUp } from "../../features/auth/auththunks";
 import PasswordInput from "../input/PasswordInput";
 import { validateEmail } from "../../utils/helper";
 
@@ -49,8 +49,14 @@ const AuthForm = ({ mode }: AuthFormProps) => {
                     console.error("Login failed:", err);
                 });
         } else {
-            // Handle signup logic here
-            console.log("Signup data", data);
+            dispatch(signUp({ fullName: data.fullName || "", email: data.email, password: data.password }))
+                .unwrap()
+                .then(() => {
+                    navigate("/login");
+                })
+                .catch((err: unknown) => {
+                    console.error("Signup failed:", err);
+                });
         }
     };
 
@@ -86,6 +92,31 @@ const AuthForm = ({ mode }: AuthFormProps) => {
                 <div className="w-full md:w-1/2 h-auto md:h-[75vh] bg-white rounded-b-lg md:rounded-r-lg md:rounded-bl-none relative p-8 md:p-16 shadow-lg shadow-cyan-200/20">
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <h4 className="text-2xl font-semibold mb-4">{isLogin ? "Log In" : "Sign Up"}</h4>
+
+                        {
+                            !isLogin && (
+                                <>
+                                    <input
+                                        type="text"
+                                        placeholder="Enter Full Name"
+                                        className="input-box"
+                                        {...register("fullName", {
+                                            required: "Full name is required",
+                                            minLength: {
+                                                value: 3,
+                                                message: "Full name must be at least 3 characters long"
+                                            }
+                                        })}
+                                    />
+                                    {errors.fullName && (
+                                        <p className="text-red-500 text-sm mt-1">
+                                            {errors.fullName.message}
+                                        </p>
+                                    )}
+                                </>
+
+                            )
+                        }
 
                         <input
                             type="text"
@@ -135,7 +166,7 @@ const AuthForm = ({ mode }: AuthFormProps) => {
                         <button
                             type="button"
                             className="btn-primary btn-light w-full"
-                            onClick={() => navigate(isLogin ? "/signup" : "/login")}
+                            onClick={() => navigate(isLogin ? "/signin" : "/login")}
                         >
                             {isLogin ? "CREATE ACCOUNT" : "BACK TO LOGIN"}
                         </button>
