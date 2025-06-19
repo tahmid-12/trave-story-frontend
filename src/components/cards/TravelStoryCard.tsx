@@ -45,7 +45,7 @@ const TravelStoryCard = ({ story }: TravelStoryCardProps) => {
   };
 
   return (
-    <div className="border rounded-lg overflow-hidden bg-white hover:shadow-lg hover:shadow-slate-200 transition-all ease-in-out relative cursor-pointer">
+    <div className="rounded-lg overflow-hidden bg-white hover:shadow-lg hover:shadow-slate-200 transition-all ease-in-out relative cursor-pointer">
       <img
         src={story.imageUrl}
         alt={story.title}
